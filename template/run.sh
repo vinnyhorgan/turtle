@@ -1,5 +1,6 @@
 #!/bin/bash
 
-./tsc/tsc *.ts
+swc *.ts -o main.js --quiet
 ../build/turtle .
-rm *.js
+rm main.js.map
+rm main.js
