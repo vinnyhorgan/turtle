@@ -33,6 +33,8 @@ typedef vec_t(Collision) col_vec_t;
 typedef struct State
 {
     bool close;
+    bool error;
+    char errorString[1000];
     char *title;
     bool vSync;
     bool grabbed;

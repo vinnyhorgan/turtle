@@ -51,6 +51,13 @@ duk_ret_t modSearch(duk_context *ctx)
     return 1;
 }
 
+void error(duk_context *ctx)
+{
+    duk_get_prop_string(ctx, -1, "stack");
+    strcpy(state.errorString, duk_safe_to_string(ctx, -1));
+    state.error = true;
+}
+
 int main(int argc, char *argv[])
 {
     if (argc < 2)
@@ -68,6 +75,7 @@ int main(int argc, char *argv[])
     }
 
     state.close = false;
+    state.error = false;
     state.title = "TURTLE 0.1";
     state.vSync = true;
     state.grabbed = false;
@@ -126,35 +134,62 @@ int main(int argc, char *argv[])
 
     SetTargetFPS(GetMonitorRefreshRate(GetCurrentMonitor()));
 
-    if (duk_peval_file(ctx, buffer) != 0)
-        printf("%s\n", duk_safe_to_string(ctx, -1));
+    if (duk_peval_file(ctx, buffer) != DUK_EXEC_SUCCESS)
+        error(ctx);
 
     while (!WindowShouldClose() && !state.close)
     {
-        cpSpaceStep(state.space, GetFrameTime());
+        if (!state.error)
+        {
+            cpSpaceStep(state.space, GetFrameTime());
 
-        duk_get_global_string(ctx, "update");
-        duk_push_number(ctx, GetFrameTime());
+            duk_get_global_string(ctx, "update");
+            duk_push_number(ctx, GetFrameTime());
 
-        if (duk_pcall(ctx, 1) != 0)
-            printf("%s\n", duk_safe_to_string(ctx, -1));
+            if (duk_pcall(ctx, 1) != DUK_EXEC_SUCCESS)
+                error(ctx);
 
-        duk_pop(ctx);
+            duk_pop(ctx);
 
-        BeginDrawing();
+            BeginDrawing();
 
-        ClearBackground(state.currentBackgroundColor);
+            ClearBackground(state.currentBackgroundColor);
 
-        duk_get_global_string(ctx, "draw");
+            duk_get_global_string(ctx, "draw");
 
-        if (duk_pcall(ctx, 0) != 0)
-            printf("%s\n", duk_safe_to_string(ctx, -1));
+            if (duk_pcall(ctx, 0) != DUK_EXEC_SUCCESS)
+                error(ctx);
 
-        duk_pop(ctx);
+            duk_pop(ctx);
 
-        EndDrawing();
+            EndDrawing();
 
-        vec_clear(&state.collisions);
+            vec_clear(&state.collisions);
+        }
+        else
+        {
+            static bool copied = false;
+
+            if (IsMouseButtonPressed(0))
+            {
+                SetClipboardText(state.errorString);
+                copied = true;
+            }
+
+            BeginDrawing();
+
+            ClearBackground(SKYBLUE);
+
+            DrawText(state.errorString, 50, 100, 20, WHITE);
+            DrawText("Click to copy message", 50, 400, 20, WHITE);
+
+            if (copied)
+            {
+                DrawText("Copied!", 50, 450, 20, WHITE);
+            }
+
+            EndDrawing();
+        }
     }
 
     CloseWindow();
