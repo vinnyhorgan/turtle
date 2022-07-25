@@ -23,6 +23,7 @@
 #include "filesystem.h"
 #include "math.h"
 #include "physics.h"
+#include "camera.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,6 +76,9 @@ int main(int argc, char *argv[])
     state.currentFont = GetFontDefault();
     state.space = cpSpaceNew();
 
+    state.camera.target = (Vector2){0, 0};
+    state.camera.zoom = 1.0f;
+
     cpVect gravity = cpv(0, 500);
     cpSpaceSetGravity(state.space, gravity);
 
@@ -108,6 +112,7 @@ int main(int argc, char *argv[])
     registerMathFunctions(ctx);
     registerFilesystemFunctions(ctx);
     registerPhysicsFunctions(ctx);
+    registerCameraFunctions(ctx);
 
     char *buffer = malloc(strlen(argv[1]) + 9);
     strcpy(buffer, argv[1]);

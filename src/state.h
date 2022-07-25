@@ -45,6 +45,7 @@ typedef struct State
     snd_map_t sounds;
     cpSpace *space;
     col_map_t colliders;
+    Camera2D camera;
     col_vec_t collisions;
 } State;
 

@@ -11,6 +11,21 @@ declare namespace turtle {
         function setPitch(sound: string, pitch: number): void;
     }
 
+    namespace camera {
+        function create(): string;
+        function attach(): void;
+        function detach(): void;
+        function lookAt(x: number, y: number): void;
+        function zoom(zoom: number): void;
+        function rotate(rotation: number): void;
+        function toWorldX(x: number): number;
+        function toWorldY(y: number): number;
+        function getX(): number;
+        function getY(): number;
+        function getZoom(): number;
+        function getRotation(): number;
+    }
+
     namespace filesystem {
 
     }
