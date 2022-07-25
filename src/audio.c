@@ -13,7 +13,12 @@ duk_ret_t audioNewSource(duk_context *ctx)
 {
     const char *filename = duk_require_string(ctx, 0);
 
-    Sound sound = LoadSound(filename);
+    char path[1000];
+    strcpy(path, state.baseDir);
+    strcat(path, "/");
+    strcat(path, filename);
+
+    Sound sound = LoadSound(path);
 
     char soundId[UUID4_LEN];
     uuid4_generate(soundId);

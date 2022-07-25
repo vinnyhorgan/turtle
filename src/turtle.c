@@ -83,6 +83,8 @@ int main(int argc, char *argv[])
     state.currentBackgroundColor = BLACK;
     state.currentFont = GetFontDefault();
     state.space = cpSpaceNew();
+    state.typescript = false;
+    state.baseDir = argv[1];
 
     state.camera.target = (Vector2){0, 0};
     state.camera.zoom = 1.0f;
@@ -122,10 +124,6 @@ int main(int argc, char *argv[])
     registerPhysicsFunctions(ctx);
     registerCameraFunctions(ctx);
 
-    char *buffer = malloc(strlen(argv[1]) + 9);
-    strcpy(buffer, argv[1]);
-    strcat(buffer, "/main.js");
-
     SetTraceLogLevel(LOG_NONE);
     InitWindow(INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, state.title);
     SetExitKey(KEY_NULL);
@@ -134,8 +132,46 @@ int main(int argc, char *argv[])
 
     SetTargetFPS(GetMonitorRefreshRate(GetCurrentMonitor()));
 
-    if (duk_peval_file(ctx, buffer) != DUK_EXEC_SUCCESS)
-        error(ctx);
+    char mainJs[100];
+    strcpy(mainJs, state.baseDir);
+    strcat(mainJs, "/main.js");
+
+    char mainTs[100];
+    strcpy(mainTs, state.baseDir);
+    strcat(mainTs, "/main.ts");
+
+    if (FileExists(mainJs))
+    {
+        if (duk_peval_file(ctx, mainJs) != DUK_EXEC_SUCCESS)
+            error(ctx);
+    }
+    else if(FileExists(mainTs))
+    {
+        char command[100];
+        strcpy(command, "swc ");
+        strcat(command, state.baseDir);
+        strcat(command, "/*.ts -o ");
+        strcat(command, state.baseDir);
+        strcat(command, "/main.js --quiet");
+
+        if (system(command) != 0)
+        {
+            strcpy(state.errorString, "Error compiling Typescript, you might need to install swc.");
+            state.error = true;
+        }
+        else
+        {
+            if (duk_peval_file(ctx, mainJs) != DUK_EXEC_SUCCESS)
+                error(ctx);
+        }
+
+        state.typescript = true;
+    }
+    else
+    {
+        strcpy(state.errorString, "Invalid argument, point to a directory containing a main.js or main.ts file.");
+        state.error = true;
+    }
 
     while (!WindowShouldClose() && !state.close)
     {
@@ -196,8 +232,6 @@ int main(int argc, char *argv[])
 
     CloseAudioDevice();
 
-    free(buffer);
-
     // TRY TO CLEANUP IMAGES, FONTS AND SOUNDS AND PHYSICS!!! LOADS OF MEMORY LEAKS...
 
     map_deinit(&state.keys);
@@ -208,6 +242,19 @@ int main(int argc, char *argv[])
     vec_deinit(&state.collisions);
 
     duk_destroy_heap(ctx);
+
+    if (state.typescript)
+    {
+        char command[100];
+        strcpy(command, "rm ");
+        strcat(command, state.baseDir);
+        strcat(command, "/main.js ");
+        strcat(command, state.baseDir);
+        strcat(command, "/main.js.map");
+
+        if (system(command) != 0)
+            printf("Error removing compiled JavaScript files.");
+    }
 
     return 0;
 }

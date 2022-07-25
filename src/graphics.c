@@ -143,7 +143,12 @@ duk_ret_t graphicsNewImage(duk_context *ctx)
 {
     const char *filename = duk_require_string(ctx, 0);
 
-    Texture2D image = LoadTexture(filename);
+    char path[1000];
+    strcpy(path, state.baseDir);
+    strcat(path, "/");
+    strcat(path, filename);
+
+    Texture2D image = LoadTexture(path);
 
     char imageId[UUID4_LEN];
     uuid4_generate(imageId);

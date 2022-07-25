@@ -38,6 +38,8 @@ typedef struct State
     char *title;
     bool vSync;
     bool grabbed;
+    bool typescript;
+    const char *baseDir;
     map_int_t keys;
     Color currentColor;
     Color currentBackgroundColor;
