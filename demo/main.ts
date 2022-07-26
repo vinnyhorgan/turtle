@@ -1,3 +1,5 @@
+let mod = require("mod");
+
 class Mage {
     x: number;
     y: number;
@@ -83,6 +85,8 @@ let balls: Ball[] = [];
 let camx = 0;
 let camy = 0;
 
+mod.test();
+
 function update(dt)
 {
     if (turtle.mouse.isPressed(0))
@@ -120,8 +124,8 @@ function update(dt)
 
     if (turtle.physics.isColliding(ground.collider, mage.collider))
     {
-        turtle.graphics.setBackgroundColor(turtle.math.random(0, 255), turtle.math.random(0, 255), turtle.math.random(0, 255), 255);
-        turtle.graphics.setColor(turtle.math.random(0, 255), turtle.math.random(0, 255), turtle.math.random(0, 255), 255);
+        // turtle.graphics.setBackgroundColor(turtle.math.random(0, 255), turtle.math.random(0, 255), turtle.math.random(0, 255), 255);
+        // turtle.graphics.setColor(turtle.math.random(0, 255), turtle.math.random(0, 255), turtle.math.random(0, 255), 255);
     }
 }
 

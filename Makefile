@@ -20,7 +20,7 @@ $(BUILD_DIR)/%.c.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 run:
-	$(BUILD_DIR)/$(TARGET) template
+	$(BUILD_DIR)/$(TARGET) demo
 
 .PHONY: clean
 clean:

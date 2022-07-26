@@ -10,6 +10,8 @@
 #include "map.h"
 #include "uuid4.h"
 
+#include "sds.h"
+
 #include "state.h"
 #include "nogame.h"
 
@@ -39,14 +41,17 @@ duk_ret_t modSearch(duk_context *ctx)
 {
     const char *id = duk_get_string(ctx, 0);
 
-    char fullname[100] = {0};
+    sds filename = sdsnew(state.baseDir);
 
-    strcat(fullname, id);
-    strcat(fullname, ".js");
+    filename = sdscat(filename, "/");
+    filename = sdscat(filename, id);
+    filename = sdscat(filename, ".js");
 
-    printf("Loading module: %s\n", fullname);
+    printf("Loading module: %s\n", filename);
 
-    duk_push_string_file(ctx, fullname);
+    duk_push_string_file(ctx, filename);
+
+    sdsfree(filename);
 
     return 1;
 }
@@ -150,9 +155,9 @@ int main(int argc, char *argv[])
         char command[100];
         strcpy(command, "swc ");
         strcat(command, state.baseDir);
-        strcat(command, "/*.ts -o ");
+        strcat(command, " -d ");
         strcat(command, state.baseDir);
-        strcat(command, "/main.js --quiet");
+        strcat(command, " -q");
 
         if (system(command) != 0)
         {
@@ -248,9 +253,7 @@ int main(int argc, char *argv[])
         char command[100];
         strcpy(command, "rm ");
         strcat(command, state.baseDir);
-        strcat(command, "/main.js ");
-        strcat(command, state.baseDir);
-        strcat(command, "/main.js.map");
+        strcat(command, "/*.js ");
 
         if (system(command) != 0)
             printf("Error removing compiled JavaScript files.");

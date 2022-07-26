@@ -1,3 +1,7 @@
+declare function require(modname: string): any;
+
+declare var exports;
+
 declare namespace turtle {
     namespace audio {
         function newSource(filename: string): string;
