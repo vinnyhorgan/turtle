@@ -22,7 +22,7 @@ function update(dt)
     {
         console.log("Received: " + event.data);
 
-        turtle.network.send(event.peer, "Thanks!", "reliable");
+        turtle.network.send(event.peer, "Thanks!");
     }
 }
 

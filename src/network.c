@@ -138,6 +138,8 @@ duk_ret_t networkSend(duk_context *ctx)
     ENetPacket *packet = enet_packet_create(data, strlen(data) + 1, enetMethod);
 
     enet_peer_send(peer, 0, packet);
+
+    return 0;
 }
 
 duk_ret_t networkConnect(duk_context *ctx)

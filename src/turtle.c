@@ -81,6 +81,11 @@ int main(int argc, char *argv[])
 
     signal(SIGINT, sigintHandler);
 
+    char command[100];
+    strcpy(command, "rm ");
+    strcat(command, state.baseDir);
+    strcat(command, "/*.js ");
+
     duk_context *ctx = duk_create_heap_default();
 
     if (!ctx)

@@ -2,6 +2,12 @@ declare function require(modname: string): any;
 
 declare var exports;
 
+interface E {
+    type: string;
+    peer: string;
+    data?: string;
+}
+
 declare namespace turtle {
     namespace audio {
         function newSource(filename: string): string;
@@ -78,9 +84,9 @@ declare namespace turtle {
     namespace network {
         function newServer(address: string, port: number): string;
         function newClient(): string;
-        function service(host: string, timeout: number): any;
-        function send(peer: string, data: string, method: string);
-        function connect(host: string, address: string, port: number);
+        function service(host: string, timeout: number): E;
+        function send(peer: string, data: string, method?: string): void;
+        function connect(host: string, address: string, port: number): string;
     }
 
     namespace physics {
