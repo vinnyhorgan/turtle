@@ -75,6 +75,14 @@ declare namespace turtle {
         function isVisible(): boolean;
     }
 
+    namespace network {
+        function newServer(address: string, port: number): string;
+        function newClient(): string;
+        function service(host: string, timeout: number): any;
+        function send(peer: string, data: string, method: string);
+        function connect(host: string, address: string, port: number);
+    }
+
     namespace physics {
         function newCircleCollider(x: number, y: number, radius: number): string;
         function newRectangleCollider(x: number, y: number, width: number, height: number): string;

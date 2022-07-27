@@ -8,7 +8,9 @@
 
 #include <stdbool.h>
 
-#include <raylib.h>
+#include "raylib.h"
+
+#include "enet/enet.h"
 
 typedef struct Collider
 {
@@ -23,10 +25,19 @@ typedef struct Collision
     const char *idB;
 } Collision;
 
+typedef struct Client
+{
+    const char *id;
+    const char *address;
+    int port;
+} Client;
+
 typedef map_t(Texture2D) img_map_t;
 typedef map_t(Font) fnt_map_t;
 typedef map_t(Sound) snd_map_t;
 typedef map_t(Collider) col_map_t;
+typedef map_t(ENetHost *) host_map_t;
+typedef map_t(ENetPeer *) peer_map_t;
 
 typedef vec_t(Collision) col_vec_t;
 
@@ -51,6 +62,8 @@ typedef struct State
     col_map_t colliders;
     Camera2D camera;
     col_vec_t collisions;
+    host_map_t hosts;
+    peer_map_t peers;
 } State;
 
 extern State state;

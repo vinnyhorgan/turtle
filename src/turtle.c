@@ -6,6 +6,7 @@
 #include "raylib.h"
 
 #include "chipmunk/chipmunk.h"
+#include "enet/enet.h"
 
 #include "map.h"
 #include "uuid4.h"
@@ -26,10 +27,12 @@
 #include "math.h"
 #include "physics.h"
 #include "camera.h"
+#include "network.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 
 #define INITIAL_WINDOW_WIDTH 800
 #define INITIAL_WINDOW_HEIGHT 600
@@ -63,6 +66,11 @@ void error(duk_context *ctx)
     state.error = true;
 }
 
+void sigintHandler(int sig)
+{
+    state.close = true;
+}
+
 int main(int argc, char *argv[])
 {
     if (argc < 2)
@@ -70,6 +78,8 @@ int main(int argc, char *argv[])
         noGame();
         return 0;
     }
+
+    signal(SIGINT, sigintHandler);
 
     duk_context *ctx = duk_create_heap_default();
 
@@ -97,11 +107,16 @@ int main(int argc, char *argv[])
     cpVect gravity = cpv(0, 500);
     cpSpaceSetGravity(state.space, gravity);
 
+    enet_initialize();
+
     map_init(&state.keys);
     map_init(&state.images);
     map_init(&state.fonts);
     map_init(&state.sounds);
     map_init(&state.colliders);
+    map_init(&state.hosts);
+    map_init(&state.peers);
+
     vec_init(&state.collisions);
 
     uuid4_init();
@@ -128,6 +143,7 @@ int main(int argc, char *argv[])
     registerFilesystemFunctions(ctx);
     registerPhysicsFunctions(ctx);
     registerCameraFunctions(ctx);
+    registerNetworkFunctions(ctx);
 
     SetTraceLogLevel(LOG_NONE);
     InitWindow(INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, state.title);
@@ -244,9 +260,14 @@ int main(int argc, char *argv[])
     map_deinit(&state.fonts);
     map_deinit(&state.sounds);
     map_deinit(&state.colliders);
+    map_deinit(&state.hosts);
+    map_init(&state.peers);
+
     vec_deinit(&state.collisions);
 
     duk_destroy_heap(ctx);
+
+    enet_deinitialize();
 
     if (state.typescript)
     {

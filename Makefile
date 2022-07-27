@@ -1,6 +1,6 @@
 CC := gcc
-CFLAGS := -Ideps/include -std=c99 #-O2
-LDFLAGS := -Ldeps/lib -lchipmunk -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+CFLAGS := -Ideps/include -std=c99 -g #-O2
+LDFLAGS := -Ldeps/lib -lenet -lchipmunk -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 TARGET := turtle
 
