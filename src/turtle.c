@@ -81,11 +81,6 @@ int main(int argc, char *argv[])
 
     signal(SIGINT, sigintHandler);
 
-    char command[100];
-    strcpy(command, "rm ");
-    strcat(command, state.baseDir);
-    strcat(command, "/*.js ");
-
     duk_context *ctx = duk_create_heap_default();
 
     if (!ctx)
@@ -108,6 +103,11 @@ int main(int argc, char *argv[])
 
     state.camera.target = (Vector2){0, 0};
     state.camera.zoom = 1.0f;
+
+    char command[100];
+    strcpy(command, "rm ");
+    strcat(command, state.baseDir);
+    strcat(command, "/*.js ");
 
     cpVect gravity = cpv(0, 500);
     cpSpaceSetGravity(state.space, gravity);
