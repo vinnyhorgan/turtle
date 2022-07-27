@@ -15,6 +15,8 @@
 
 #define LOG_VERSION "0.1.0"
 
+#define LOG_USE_COLOR // Enable colors
+
 typedef struct {
   va_list ap;
   const char *fmt;
@@ -28,14 +30,16 @@ typedef struct {
 typedef void (*log_LogFn)(log_Event *ev);
 typedef void (*log_LockFn)(bool lock, void *udata);
 
-enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
+// Changed enum contents to avoid conflicts with raylib
 
-#define log_trace(...) log_log(LOG_TRACE, __FILE__, __LINE__, __VA_ARGS__)
-#define log_debug(...) log_log(LOG_DEBUG, __FILE__, __LINE__, __VA_ARGS__)
-#define log_info(...)  log_log(LOG_INFO,  __FILE__, __LINE__, __VA_ARGS__)
-#define log_warn(...)  log_log(LOG_WARN,  __FILE__, __LINE__, __VA_ARGS__)
-#define log_error(...) log_log(LOG_ERROR, __FILE__, __LINE__, __VA_ARGS__)
-#define log_fatal(...) log_log(LOG_FATAL, __FILE__, __LINE__, __VA_ARGS__)
+enum { RXI_LOG_TRACE, RXI_LOG_DEBUG, RXI_LOG_INFO, RXI_LOG_WARN, RXI_LOG_ERROR, RXI_LOG_FATAL };
+
+#define log_trace(...) log_log(RXI_LOG_TRACE, __FILE__, __LINE__, __VA_ARGS__)
+#define log_debug(...) log_log(RXI_LOG_DEBUG, __FILE__, __LINE__, __VA_ARGS__)
+#define log_info(...)  log_log(RXI_LOG_INFO,  __FILE__, __LINE__, __VA_ARGS__)
+#define log_warn(...)  log_log(RXI_LOG_WARN,  __FILE__, __LINE__, __VA_ARGS__)
+#define log_error(...) log_log(RXI_LOG_ERROR, __FILE__, __LINE__, __VA_ARGS__)
+#define log_fatal(...) log_log(RXI_LOG_FATAL, __FILE__, __LINE__, __VA_ARGS__)
 
 const char* log_level_string(int level);
 void log_set_lock(log_LockFn fn, void *udata);
