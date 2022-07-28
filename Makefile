@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -Ideps/include -Wall -Wextra -Wno-unused-value -Wno-unused-parameter -O2 -std=c99 -g
+CFLAGS := -Ideps/include -Wall -Wextra -Wno-unused-value -Wno-unused-parameter -O0 -std=c99 -g
 LDFLAGS := -Ldeps/lib -lchipmunk -lenet -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 TARGET := turtle
@@ -21,6 +21,9 @@ $(BUILD_DIR)/%.c.o: %.c
 
 run:
 	$(BUILD_DIR)/$(TARGET) demo
+
+debug:
+	gdb --args $(BUILD_DIR)/$(TARGET) demo
 
 .PHONY: clean
 clean:

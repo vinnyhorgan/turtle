@@ -20,6 +20,8 @@
 
 #define VERSION "alpha 0.1"
 
+// STRUCTS
+
 typedef struct Collider
 {
     cpBody *body;
@@ -39,6 +41,8 @@ typedef struct Client
     const char *address;
     int port;
 } Client;
+
+// STATE
 
 typedef map_t(Texture2D) img_map_t;
 typedef map_t(Font) fnt_map_t;
@@ -76,26 +80,35 @@ typedef struct State
 
 State state;
 
+// AUDIO MODULE
+
 duk_ret_t audioNewSource(duk_context *ctx)
 {
     const char *filename = duk_require_string(ctx, 0);
 
-    char path[1000];
-    strcpy(path, state.baseDir);
-    strcat(path, "/");
-    strcat(path, filename);
+    sds path = sdsempty();
+    path = sdscatprintf(path, "%s/%s", state.baseDir, filename);
+
+    if (!FileExists(path))
+    {
+        duk_push_error_object(ctx, DUK_ERR_ERROR, "File does not exist.");
+        duk_throw(ctx);
+    }
 
     Sound sound = LoadSound(path);
 
+    sdsfree(path);
+
     char soundId[UUID4_LEN];
     uuid4_generate(soundId);
-
     map_set(&state.sounds, soundId, sound);
 
     duk_push_string(ctx, soundId);
 
     return 1;
 }
+
+// REFACTORED
 
 duk_ret_t audioSetMasterVolume(duk_context *ctx)
 {
@@ -247,6 +260,8 @@ void registerAudioFunctions(duk_context *ctx)
     duk_put_prop_string(ctx, -2, "setPitch");
     duk_pop(ctx);
 }
+
+// CAMERA MODULE
 
 duk_ret_t cameraAttach(duk_context *ctx)
 {
@@ -2220,13 +2235,9 @@ duk_ret_t modSearch(duk_context *ctx)
 {
     const char *id = duk_get_string(ctx, 0);
 
-    sds filename = sdsnew(state.baseDir);
+    sds filename = sdsempty();
 
-    filename = sdscat(filename, "/");
-    filename = sdscat(filename, id);
-    filename = sdscat(filename, ".js");
-
-    printf("Loading module: %s\n", filename);
+    filename = sdscatprintf(filename, "%s/%s.js", state.baseDir, id);
 
     duk_push_string_file(ctx, filename);
 
@@ -2258,6 +2269,12 @@ int main(int argc, char *argv[])
     if (strcmp(argv[1], "version") == 0)
     {
         printf("TURTLE %s\n", VERSION);
+        return 0;
+    }
+
+    if (strcmp(argv[1], "help") == 0)
+    {
+        printf("turtle [path to main.js/ts] [version] [help]\n");
         return 0;
     }
 
@@ -2453,10 +2470,9 @@ int main(int argc, char *argv[])
 
     if (state.typescript)
     {
-        char command[100];
-        strcpy(command, "rm ");
-        strcat(command, state.baseDir);
-        strcat(command, "/*.js ");
+        sds command = sdsempty();
+
+        command = sdscatprintf(command, "find %s -name \"*.js\" -type f -delete", state.baseDir);
 
         if (system(command) != 0)
             printf("Error removing compiled JavaScript files.");
