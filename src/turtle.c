@@ -2323,6 +2323,9 @@ int main(int argc, char *argv[])
     duk_console_init(ctx, DUK_CONSOLE_PROXY_WRAPPER);
     duk_module_duktape_init(ctx);
 
+    duk_push_object(ctx);
+    duk_put_global_string(ctx, "exports");
+
     duk_get_global_string(ctx, "Duktape");
     duk_push_c_function(ctx, modSearch, 4);
     duk_put_prop_string(ctx, -2, "modSearch");
@@ -2372,7 +2375,7 @@ int main(int argc, char *argv[])
         strcat(command, state.baseDir);
         strcat(command, " -d ");
         strcat(command, state.baseDir);
-        strcat(command, " -q");
+        strcat(command, " -q -C module.type=commonjs -C module.strictMode=false");
 
         if (system(command) != 0)
         {

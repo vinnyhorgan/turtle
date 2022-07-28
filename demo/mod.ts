@@ -1,5 +1,6 @@
-let test = () => {
-    console.log("Hello from TS module");
+function test()
+{
+    console.log("Hello from module!");
 }
 
-exports.test = test;
+export { test };

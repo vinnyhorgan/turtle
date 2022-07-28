@@ -23,7 +23,7 @@ run:
 	$(BUILD_DIR)/$(TARGET) demo
 
 debug:
-	gdb --args $(BUILD_DIR)/$(TARGET) demo
+	gdb -tui --args $(BUILD_DIR)/$(TARGET) demo
 
 .PHONY: clean
 clean:

@@ -1,13 +1,10 @@
-let mod = require("mod");
+import { test } from "./mod";
 
-let computer = turtle.audio.newSource("assets/computer.ogg");
+test();
 
 function update(dt)
 {
-    if (turtle.keyboard.isPressed("return"))
-    {
-        turtle.audio.play(computer);
-    }
+
 }
 
 function draw()
